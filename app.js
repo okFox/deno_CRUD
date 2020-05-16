@@ -55,12 +55,12 @@ export const updateCat = async ({ params, request, response }) => {
   if( temp.length ) {
     temp[0].age = age
     response.status = 200
-    response.body = { msg: "ok"}
+    response.body = { msg: `${params.name}'s age is now ${age}`}
     return
   }
 
   response.status = 400;
-  response.body = { msg: "no"};
+  response.body = { msg: `cannot find ${params.name}`};
 };
 
 
