@@ -6,22 +6,25 @@ const HOST = env.HOST || '127.0.0.1';
 
 let cats = [
   {
-    name: "Garfield",
-    age: 33,
+    name: 'Garfield',
+    age: 33
   },
   {
-    name: "Heathcliff",
-    age: 8,
+    name: 'Heathcliff',
+    age: 8
   },
   {
-    name: "Whiskey",
-    age: 19,
-  },
+    name: 'Whiskey',
+    age: 19
+  }
 ];
 
+// @ts-ignore
 export const getCats = ({ response }) => response.body = cats;
+
+// @ts-ignore
 export const getCat = ({ params, response }) => {
-  const cat = cats.filter(cat => cat.name === params.name);
+  const cat = cats.filter(cat => cat.name.toLowerCase() === params.name.toLowerCase());
   if(cat.length) {
     response.status = 200
     response.body = cat[0]
@@ -31,14 +34,45 @@ export const getCat = ({ params, response }) => {
   response.body = {msg: `Not found.  No ${params.name} for you!`};
 }
 
+//still need async keyword within functions
+// @ts-ignore
+export const addCat = async ({ request, response }) => {
+  const body = await request.body();
+  const cat = body.value;
+  cats.push(cat);
+
+  response.body = { msg: 'ok' };
+  response.status = 200;
+}
+
+// @ts-ignore
+export const updateCat = async ({ params, request, response }) => {
+  const temp = cats.filter((existingCat) => existingCat.name.toLowerCase() === params.name.toLowerCase());
+  const body = await request.body();
+  const { age } = body.value;
+  // console.log(age);
+
+  if( temp.length ) {
+    temp[0].age = age
+    response.status = 200
+    response.body = { msg: "ok"}
+    return
+  }
+
+  response.status = 400;
+  response.body = { msg: "no"};
+};
+
+
 
 
 const router = new Router();
 router
+  // @ts-ignore
   .get('/cats', getCats)
   .get('/cats/:name', getCat)
-  // .post('/cats', addDog)
-  // .put('/cats/:name', updateCat)
+  .post('/cats', addCat)
+  .put('/cats/:name', updateCat);
   // .delete('/cats/:name', removeCat)
 
 
